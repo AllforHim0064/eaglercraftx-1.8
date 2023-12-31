@@ -1,6 +1,8 @@
 package net.lax1dude.eaglercraft.v1_8.internal;
 
 import java.util.LinkedList;
+import java.util.Set; // Add import for Set
+import java.util.HashSet; // Add import for HashSet
 
 import org.teavm.interop.Async;
 import org.teavm.interop.AsyncCallback;
@@ -44,6 +46,12 @@ public class PlatformNetworking {
 	
 	private static final Logger logger = LogManager.getLogger("PlatformNetworking");
 	
+	private static Set<String> blockedURIs = new HashSet<>(); // Maintain a set of blocked URIs
+
+	public static void addBlockedURI(String uri) {
+        	blockedURIs.add(uri);
+    	}
+	
 	public static EnumEaglerConnectionState playConnectionState() {
 		return !sockIsConnected ? (sockIsFailed ? EnumEaglerConnectionState.FAILED : EnumEaglerConnectionState.CLOSED)
 				: (sockIsConnecting ? EnumEaglerConnectionState.CONNECTING : EnumEaglerConnectionState.CONNECTED);
@@ -60,6 +68,13 @@ public class PlatformNetworking {
 	public static native Boolean connectWebSocket(String sockURI);
 	
 	private static void connectWebSocket(String sockURI, final AsyncCallback<Boolean> cb) {
+		PlatformNetworking.addBlockedURI("wss://mc.arch.lol");
+		// Check if the URI is blocked
+        	if (isBlockedURI(sockURI)) {
+            		// Return false or handle as needed for a blocked URI
+            		cb.complete(Boolean.FALSE);
+            		return;
+        	}
 		sockIsConnecting = true;
 		sockIsConnected = false;
 		sockIsAlive = false;
@@ -139,6 +154,10 @@ public class PlatformNetworking {
 			}
 		});
 	}
+	
+	private static boolean isBlockedURI(String uri) {
+        	return blockedURIs.contains(uri);
+    	}
 
 	public static void playDisconnect() {
 		if(sock != null) sock.close();
