@@ -69,6 +69,7 @@ public class PlatformNetworking {
 	
 	private static void connectWebSocket(String sockURI, final AsyncCallback<Boolean> cb) {
 		PlatformNetworking.addBlockedURI("wss://mc.arch.lol");
+		PlatformNetworking.addBlockedURI("wss://mc.arch.mba");
 		// Check if the URI is blocked
         	if (isBlockedURI(sockURI)) {
             		// Return false or handle as needed for a blocked URI
@@ -156,8 +157,14 @@ public class PlatformNetworking {
 	}
 	
 	private static boolean isBlockedURI(String uri) {
-        	return blockedURIs.contains(uri);
-    	}
+		for (String blockedUri : blockedURIs) {
+			if (uri.startsWith(blockedUri)) {
+				return true; // Matches the blocked pattern
+			}
+		}
+		return false;
+	}
+
 
 	public static void playDisconnect() {
 		if(sock != null) sock.close();
