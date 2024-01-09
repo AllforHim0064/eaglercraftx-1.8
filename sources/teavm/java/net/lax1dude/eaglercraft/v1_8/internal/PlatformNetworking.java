@@ -70,6 +70,7 @@ public class PlatformNetworking {
 	private static void connectWebSocket(String sockURI, final AsyncCallback<Boolean> cb) {
 		PlatformNetworking.addBlockedURI("wss://mc.arch.lol");
 		PlatformNetworking.addBlockedURI("wss://mc.arch.mba");
+		PlatformNetworking.addBlockedURI("wss://mc.asspixel.net");
 		// Check if the URI is blocked
         	if (isBlockedURI(sockURI)) {
             		// Return false or handle as needed for a blocked URI
