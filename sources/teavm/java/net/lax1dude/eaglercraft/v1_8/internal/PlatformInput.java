@@ -100,6 +100,9 @@ public class PlatformInput {
 	
 	@JSBody(params = { }, script = "window.onbeforeunload = () => {return false;};")
 	private static native void onBeforeCloseRegister();
+
+        @JSBody(params = {}, script = "return document.activeElement.tagName.toLowerCase() === 'input' && document.activeElement.type === 'text';")
+    	private static native boolean isFocusOnTextInput();
 	
 	static void initHooks(Window window, HTMLCanvasElement canvaz) {
 		win = window;
@@ -161,6 +164,9 @@ public class PlatformInput {
 		win.addEventListener("keydown", keydown = new EventListener<KeyboardEvent>() {
 			@Override
 			public void handleEvent(KeyboardEvent evt) {
+				if (isFocusOnTextInput()) {
+                    			return; // Skip handling if focus is on text input
+                		}
 				int w = getWhich(evt);
 				if (w == 122) { // F11
 					toggleFullscreen();
@@ -176,6 +182,9 @@ public class PlatformInput {
 		win.addEventListener("keyup", keyup = new EventListener<KeyboardEvent>() {
 			@Override
 			public void handleEvent(KeyboardEvent evt) {
+				if (isFocusOnTextInput()) {
+                    			return; // Skip handling if focus is on text input
+                		}
 				int w = getWhich(evt);
 				evt.preventDefault();
 				evt.stopPropagation();
@@ -194,6 +203,9 @@ public class PlatformInput {
 		win.addEventListener("keypress", keypress = new EventListener<KeyboardEvent>() {
 			@Override
 			public void handleEvent(KeyboardEvent evt) {
+				if (isFocusOnTextInput()) {
+                    			return; // Skip handling if focus is on text input
+                		}
 				evt.preventDefault();
 				evt.stopPropagation();
 				if(enableRepeatEvents && evt.isRepeat()) keyEvents.add(evt);
